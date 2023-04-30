@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "lib": ["DOM", "DOM.Iterable", "ES2020.Promise", "ESNext"],
+    "noEmit": true,
+    "noImplicitOverride": true
+  },
+  "ts-node": {
+    "esm": true,
+    "transpileOnly": true,
+    "transpiler": "ts-node/transpilers/swc"
+  },
+  "exclude": ["node_modules", "**/*.test.ts"]
+}
