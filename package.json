@@ -5,10 +5,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "node-gyp configure",
-    "prebuild": "node-gyp build",
-    "build": "tsc",
-    "start": "npm run build && ts-node index.ts",
+    "install": "cmake-js compile",
+    "build:addon": "cmake-js build",
+    "build": "tsc -p . --noEmit false",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
