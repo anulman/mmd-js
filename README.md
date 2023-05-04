@@ -3,10 +3,15 @@
 This project is a lightweight Napi module that wraps `multimarkdown-6` so
 JS scripts can parse Multimarkdown documents and directly consume their ASTs.
 
+## Demo / Context
+
+[![mmd-js demo ��MultiMarkdown AST parser & walk routines in Node.js](https://cdn.loom.com/sessions/thumbnails/e486a43d1ea34a6e9adde06837237fd0-with-play.gif)](https://www.loom.com/share/e486a43d1ea34a6e9adde06837237fd0 "mmd-js demo ��MultiMarkdown AST parser & walk routines in Node.js")
+
 ## Installation
 
 ```bash
 # CURRENTLY BORKED!! Build from source instead
+
 # npm install mmd-js
 # or `yarn add mmd-js`
 # or `pnpm add mmd-js`
