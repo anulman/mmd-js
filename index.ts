@@ -1,5 +1,290 @@
-import bindings from 'bindings';
+import bindings from "bindings";
 
-const addon = bindings('mmd-js');
+const mmd = bindings("mmd-js");
 
-console.log(addon.hello());
+export enum Type {
+  DOC_START_TOKEN = 0, //!< DOC_START_TOKEN must be type 0
+  LINE_HR = 1,
+  LINE_SETEXT_1 = 2,
+  LINE_SETEXT_2 = 3,
+  LINE_YAML = 4,
+  LINE_CONTINUATION = 5,
+  LINE_PLAIN = 6,
+  LINE_INDENTED_TAB = 7,
+  LINE_INDENTED_SPACE = 8,
+  LINE_TABLE = 9,
+  LINE_TABLE_SEPARATOR = 10,
+  LINE_FALLBACK = 11,
+  LINE_HTML = 12,
+  LINE_ATX_1 = 13,
+  LINE_ATX_2 = 14,
+  LINE_ATX_3 = 15,
+  LINE_ATX_4 = 16,
+  LINE_ATX_5 = 17,
+  LINE_ATX_6 = 18,
+  LINE_BLOCKQUOTE = 19,
+  LINE_LIST_BULLETED = 20,
+  LINE_LIST_ENUMERATED = 21,
+  LINE_DEF_ABBREVIATION = 22,
+  LINE_DEF_CITATION = 23,
+  LINE_DEF_FOOTNOTE = 24,
+  LINE_DEF_GLOSSARY = 25,
+  LINE_DEF_LINK = 26,
+  LINE_TOC = 27,
+  LINE_DEFINITION = 28,
+  LINE_META = 29,
+  LINE_BACKTICK = 30,
+  LINE_FENCE_BACKTICK_3 = 31,
+  LINE_FENCE_BACKTICK_4 = 32,
+  LINE_FENCE_BACKTICK_5 = 33,
+  LINE_FENCE_BACKTICK_START_3 = 34,
+  LINE_FENCE_BACKTICK_START_4 = 35,
+  LINE_FENCE_BACKTICK_START_5 = 36,
+  LINE_STOP_COMMENT = 37,
+  LINE_EMPTY = 38,
+  LINE_START_COMMENT = 39,
+  BLOCK_BLOCKQUOTE = 50, //!< This must start *after* the largest number in parser.h
+  BLOCK_CODE_FENCED,
+  BLOCK_CODE_INDENTED,
+  BLOCK_DEFLIST,
+  BLOCK_DEFINITION,
+  BLOCK_DEF_ABBREVIATION,
+  BLOCK_DEF_CITATION,
+  BLOCK_DEF_GLOSSARY,
+  BLOCK_DEF_FOOTNOTE,
+  BLOCK_DEF_LINK,
+  BLOCK_EMPTY,
+  BLOCK_HEADING, //!< Placeholder for theme cascading
+  BLOCK_H1, //!< Leave H1, H2, etc. in order
+  BLOCK_H2,
+  BLOCK_H3,
+  BLOCK_H4,
+  BLOCK_H5,
+  BLOCK_H6,
+  BLOCK_HR,
+  BLOCK_HTML,
+  BLOCK_LIST_BULLETED,
+  BLOCK_LIST_BULLETED_LOOSE,
+  BLOCK_LIST_ENUMERATED,
+  BLOCK_LIST_ENUMERATED_LOOSE,
+  BLOCK_LIST_ITEM,
+  BLOCK_LIST_ITEM_TIGHT,
+  BLOCK_META,
+  BLOCK_PARA,
+  BLOCK_SETEXT_1,
+  BLOCK_SETEXT_2,
+  BLOCK_TABLE,
+  BLOCK_TABLE_HEADER,
+  BLOCK_TABLE_SECTION,
+  BLOCK_TERM,
+  BLOCK_TOC,
+
+  CRITIC_ADD_OPEN,
+  CRITIC_ADD_CLOSE,
+  CRITIC_DEL_OPEN,
+  CRITIC_DEL_CLOSE,
+  CRITIC_COM_OPEN,
+  CRITIC_COM_CLOSE,
+  CRITIC_SUB_OPEN,
+  CRITIC_SUB_DIV,
+  CRITIC_SUB_DIV_A,
+  CRITIC_SUB_DIV_B,
+  CRITIC_SUB_CLOSE,
+  CRITIC_HI_OPEN,
+  CRITIC_HI_CLOSE,
+
+  PAIR_CRITIC_ADD,
+  PAIR_CRITIC_DEL,
+  PAIR_CRITIC_COM,
+  PAIR_CRITIC_SUB_ADD,
+  PAIR_CRITIC_SUB_DEL,
+  PAIR_CRITIC_HI,
+
+  PAIRS, //!< Placeholder for theme cascading
+  PAIR_ANGLE,
+  PAIR_BACKTICK,
+  PAIR_BRACKET,
+  PAIR_BRACKET_ABBREVIATION,
+  PAIR_BRACKET_FOOTNOTE,
+  PAIR_BRACKET_GLOSSARY,
+  PAIR_BRACKET_CITATION,
+  PAIR_BRACKET_IMAGE,
+  PAIR_BRACKET_VARIABLE,
+  PAIR_BRACE,
+  PAIR_EMPH,
+  PAIR_MATH,
+  PAIR_PAREN,
+  PAIR_PAREN_LINK,
+  PAIR_QUOTE_SINGLE,
+  PAIR_QUOTE_DOUBLE,
+  PAIR_QUOTE_ALT,
+  PAIR_RAW_FILTER,
+  PAIR_SUBSCRIPT,
+  PAIR_SUPERSCRIPT,
+  PAIR_STAR,
+  PAIR_STRONG,
+  PAIR_UL,
+  PAIR_BRACES,
+
+  MARKUP,
+  STAR,
+  UL,
+  EMPH_START,
+  EMPH_STOP,
+  STRONG_START,
+  STRONG_STOP,
+
+  BRACKET_LEFT,
+  BRACKET_RIGHT,
+  BRACKET_ABBREVIATION_LEFT,
+  BRACKET_FOOTNOTE_LEFT,
+  BRACKET_GLOSSARY_LEFT,
+  BRACKET_CITATION_LEFT,
+  BRACKET_IMAGE_LEFT,
+  BRACKET_VARIABLE_LEFT,
+
+  PAREN_LEFT,
+  PAREN_RIGHT,
+  PAREN_LINK_LEFT,
+  PAREN_LINK_RIGHT,
+
+  ANGLE_LEFT,
+  ANGLE_RIGHT,
+
+  BRACE_DOUBLE_LEFT,
+  BRACE_DOUBLE_RIGHT,
+
+  AMPERSAND,
+  AMPERSAND_LONG,
+  APOSTROPHE,
+  BACKTICK,
+  CODE_FENCE_LINE,
+  CODE_FENCE,
+  COLON,
+  DASH_M,
+  DASH_N,
+  ELLIPSIS,
+  QUOTE_SINGLE,
+  QUOTE_DOUBLE,
+  QUOTE_LEFT_SINGLE,
+  QUOTE_RIGHT_SINGLE,
+  QUOTE_LEFT_DOUBLE,
+  QUOTE_RIGHT_DOUBLE,
+  QUOTE_RIGHT_ALT,
+
+  ESCAPED_CHARACTER,
+
+  HTML_ENTITY,
+  HTML_COMMENT_START,
+  HTML_COMMENT_STOP,
+  PAIR_HTML_COMMENT,
+
+  MATH_PAREN_OPEN,
+  MATH_PAREN_CLOSE,
+  MATH_BRACKET_OPEN,
+  MATH_BRACKET_CLOSE,
+  MATH_DOLLAR_SINGLE,
+  MATH_DOLLAR_DOUBLE,
+
+  EQUAL,
+  PIPE,
+  PLUS,
+  SLASH,
+
+  SUPERSCRIPT,
+  SUBSCRIPT,
+
+  INDENT_TAB,
+  INDENT_SPACE,
+  NON_INDENT_SPACE,
+
+  HASH1, //!< Leave HASH1, HASH2, etc. in order
+  HASH2,
+  HASH3,
+  HASH4,
+  HASH5,
+  HASH6,
+  MARKER_BLOCKQUOTE,
+  MARKER_H1, //!< Leave MARKER_H1, MARKER_H2, etc. in order
+  MARKER_H2,
+  MARKER_H3,
+  MARKER_H4,
+  MARKER_H5,
+  MARKER_H6,
+  MARKER_SETEXT_1,
+  MARKER_SETEXT_2,
+  MARKER_LIST_BULLET,
+  MARKER_LIST_ENUMERATOR,
+  MARKER_DEFLIST_COLON,
+
+  TABLE_ROW,
+  TABLE_CELL,
+  TABLE_DIVIDER,
+
+  TOC,
+  TOC_SINGLE,
+  TOC_RANGE,
+
+  TEXT_BACKSLASH,
+  RAW_FILTER_LEFT,
+  TEXT_BRACE_LEFT,
+  TEXT_BRACE_RIGHT,
+  TEXT_EMPTY,
+  TEXT_HASH,
+  TEXT_LINEBREAK,
+  TEXT_LINEBREAK_SP,
+  TEXT_NL,
+  TEXT_NL_SP,
+  TEXT_NUMBER_POSS_LIST,
+  TEXT_PERCENT,
+  TEXT_PERIOD,
+  TEXT_PLAIN,
+
+  MANUAL_LABEL,
+
+  OBJECT_REPLACEMENT_CHARACTER,
+}
+
+export type Token = {
+  type: Type;
+  can_open: boolean;
+  can_close: boolean;
+  unmatched: boolean;
+
+  start: number;
+  len: number;
+
+  out_start: number;
+  out_len: number;
+
+  next?: Token;
+  prev?: Token;
+  child?: Token;
+  tail?: Token;
+  mate?: Token;
+};
+
+export const parse = (input: Buffer): Token => mmd.parse(input);
+export const read = (input: Buffer, token: Token) =>
+  input.subarray(token.start, token.start + token.len).toString();
+export const readTitle = (input: Buffer, token: Token) =>
+  read(input, token)
+    .replace(/^\s*#+\s*/, "")
+    .replace(/\s*#+\s*$/, "");
+
+export const walk = (
+  token: Token,
+  fn: (token: Token) => undefined | { stopWalking: boolean }
+) => {
+  if (fn(token)?.stopWalking) {
+    return;
+  }
+
+  if (token.child) {
+    walk(token.child, fn);
+  }
+
+  if (token.next) {
+    walk(token.next, fn);
+  }
+};
