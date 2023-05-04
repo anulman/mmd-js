@@ -274,7 +274,7 @@ export const readTitle = (input: Buffer, token: Token) =>
 
 export const walk = (
   token: Token,
-  fn: (token: Token) => undefined | { stopWalking: boolean }
+  fn: (token: Token) => void | { stopWalking: boolean }
 ) => {
   if (fn(token)?.stopWalking) {
     return;
