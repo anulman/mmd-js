@@ -8,6 +8,7 @@
     "install": "cmake-js compile",
     "build:addon": "cmake-js build",
     "build": "tsc -p . --noEmit false",
+    "demo": "ts-node bin/demo.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
