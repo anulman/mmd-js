@@ -6,7 +6,8 @@ JS scripts can parse Multimarkdown documents and directly consume their ASTs.
 ## Installation
 
 ```bash
-npm install mmd-js
+# CURRENTLY BORKED!! Build from source instead
+# npm install mmd-js
 # or `yarn add mmd-js`
 # or `pnpm add mmd-js`
 ```
@@ -76,6 +77,7 @@ pnpm demo # runs the ts compiler, then invokes `bin/demo.ts`
 
 ## Todo
 
+- [ ] Figure out CMake-js + submodule setup for npm
 - [ ] Let the user configure which extensions to enable on the MMD engine
 - [ ] Consider shipping pre-built binaries
 - [ ] Test?
