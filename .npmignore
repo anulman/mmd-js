@@ -11,3 +11,4 @@ packages/MultiMarkdown-6/*
 !packages/MultiMarkdown-6/LICENSE
 !packages/MultiMarkdown-6/lemon/*
 !packages/MultiMarkdown-6/src/*
+!packages/MultiMarkdown-6/templates/*
