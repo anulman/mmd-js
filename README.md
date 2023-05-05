@@ -82,7 +82,7 @@ pnpm demo # runs the ts compiler, then invokes `bin/demo.ts`
 
 ## Todo
 
-- [ ] Figure out CMake-js + submodule setup for npm
+- [x] Figure out CMake-js + submodule setup for npm
 - [ ] Let the user configure which extensions to enable on the MMD engine
 - [ ] Consider shipping pre-built binaries
 - [ ] Test?
