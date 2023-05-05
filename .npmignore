@@ -5,3 +5,9 @@ node_modules/
 
 *.ts
 !*.d.ts
+
+packages/MultiMarkdown-6/*
+!packages/MultiMarkdown-6/CMakeLists.txt
+!packages/MultiMarkdown-6/LICENSE
+!packages/MultiMarkdown-6/lemon/*
+!packages/MultiMarkdown-6/src/*
