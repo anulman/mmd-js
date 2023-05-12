@@ -6,6 +6,7 @@ set (BUILD_WITH_INSTALL_RPATH 1)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
 set (CMAKE_CXX_STANDARD 11)
 set (MMD_SUFFIX_PATH packages/MultiMarkdown-6)
+set (CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 project (mmd-js)
 file(GLOB SOURCE_FILES "mmd.cpp")
