@@ -31,10 +31,6 @@ set_target_properties(${PROJECT_NAME}
 # Link the framework
 add_subdirectory(${MMD_SUFFIX_PATH} ${CMAKE_CURRENT_BINARY_DIR}/Release)
 target_compile_definitions(libMultiMarkdown PUBLIC DISABLE_OBJECT_POOL=1)
-set_target_properties(libMultiMarkdown
-  PROPERTIES
-  FRAMEWORK TRUE
-)
 
 target_link_libraries(${PROJECT_NAME}
   PRIVATE
