@@ -1,0 +1,36 @@
+<html>
+<body>
+<label>MultiMarkdown file: <input type="file"></input></label>
+<pre></pre>
+
+<script type="text/javascript">
+var Module = {
+  rootToken: null,
+  tokenObjectMap: new Map(),
+  onRuntimeInitialized: () => {
+  document.querySelector("input").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = e.target.result;
+      const dataPtr = Module.asm.malloc(data.byteLength + 1);
+      const dataOnHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, data.byteLength + 1);
+
+      dataOnHeap.set(new Uint8Array(data));
+      dataOnHeap.set(new Uint8Array([0]), data.byteLength);
+
+      const result = Module._parse_js(dataOnHeap.byteOffset, data.length);
+
+      Module.asm.free(dataPtr);
+
+      console.log(Module.rootToken0);
+      document.querySelector("pre").textContent = new TextDecoder().decode(data);
+    };
+    reader.readAsArrayBuffer(file);
+  });
+  }
+}
+</script>
+<script type="text/javascript" src="/build/MultiMarkdownWasm.js"></script>
+</body>
+</html>
