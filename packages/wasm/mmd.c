@@ -46,44 +46,33 @@ EM_JS(void*, create_js_object, (token* obj), {
 EM_JS(void*, throw_js_error, (const char* message), {
   Module.error = message;
 
-  // Return a failure status code
-  // (you'll need to adjust your other code to handle this)
   return -1;
 });
 
-token* parse(const char* text) {
+EMSCRIPTEN_KEEPALIVE
+int parse(const char* text) {
   mmd_engine *engine = mmd_engine_create_with_string(text, EXT_NOTES);
   mmd_engine_parse_string(engine);
 
+  int ret = 0;
   token* root = mmd_engine_root(engine);
 
   if (root == NULL) {
     throw_js_error("root is NULL");
-    return NULL;
+    ret = -1;
   }
 
-   if (root->type < 0) {
+  if (root->type < 0) {
     throw_js_error("root->type is not a valid number");
-    return NULL;
+    ret = -1;
   }
 
-  // TODO - probably need to wrap the objects again after all
+  if (ret == 0) {
+    create_js_object(root);
+  }
+
   // Free the engine
-  //mmd_engine_free(engine, true);
+  mmd_engine_free(engine, true);
 
-  return root;
-}
-
-// Emscripten bindings
-EMSCRIPTEN_KEEPALIVE
-int parse_js(const char* text) {
-  token* result = parse(text);
-
-  if (result == NULL) {
-    return -1;
-  }
-
-  create_js_object(result);
-
-  return 0;
+  return ret;
 }
