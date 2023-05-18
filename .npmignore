@@ -1,12 +1,15 @@
 bin/
-build/
+build/**/*
 out/
 node_modules/
+packages/**/*
 
 *.ts
 !*.d.ts
 
-packages/MultiMarkdown-6/*
+!build/wasm/*.js
+!build/wasm/*.wasm
+
 !packages/MultiMarkdown-6/CMakeLists.txt
 !packages/MultiMarkdown-6/LICENSE
 !packages/MultiMarkdown-6/lemon/*
