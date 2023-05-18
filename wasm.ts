@@ -1,5 +1,5 @@
 import type * as m from "./types.js";
-import Mmd from "./build/wasm/MultiMarkdownWasm.js";
+import Mmd from "./mmd.wasm.js";
 
 export type Wasm = {
   _malloc: (size: number) => number;

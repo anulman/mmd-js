@@ -9,11 +9,12 @@
     "build:napi": "npm run napi:compile",
     "build:wasm": "npm run wasm:build",
     "build:js": "tsc -p . --noEmit false",
-    "build": "concurrently --kill-others-on-fail -s all \"npm:build:napi\" \"npm:build:wasm\" \"npm:build:js\"",
+    "build": "concurrently --kill-others-on-fail -s all \"npm:build:napi\" \"npm:build:wasm\" && cp build/wasm/MultiMarkdownWasm.wasm mmd.wasm && cp build/wasm/MultiMarkdownWasm.js mmd.wasm.js && npm run build:js",
     "demo": "ts-node bin/demo.ts",
     "napi:compile": "cmake-js compile -d packages/napi -O build/napi",
     "wasm:configure": "emcmake cmake -S packages/wasm -B build/wasm",
-    "wasm:build": "emmake make -C build/wasm"
+    "wasm:build": "emmake make -C build/wasm",
+    "prepublish": "npm run build"
   },
   "keywords": [],
   "author": "",

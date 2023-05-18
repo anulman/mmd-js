@@ -5,7 +5,9 @@ node_modules/
 packages/**/*
 
 *.ts
+*.html
 !*.d.ts
+!mmd.wasm
 
 !build/wasm/*.js
 !build/wasm/*.wasm
