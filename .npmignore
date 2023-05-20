@@ -1,5 +1,6 @@
 bin/
 build/**/*
+demo/
 out/
 node_modules/
 packages/**/*
