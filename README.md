@@ -68,6 +68,9 @@ Tested with `pnpm`, but `npm` should work fine.
 git submodule init
 git submodule update
 
+# install emscripten, for wasm builds
+brew install emscripten
+
 # install js/ts deps
 pnpm install
 ```
