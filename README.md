@@ -95,6 +95,9 @@ brew install emscripten
 
 # install js/ts deps
 pnpm install
+
+# configure wasm before building
+pnpm run wasm:configure
 ```
 
 ### Build && Run
