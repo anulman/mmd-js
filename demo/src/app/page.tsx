@@ -29,7 +29,7 @@ export default function Home() {
               {data.sections.map((section) => (
                 <li key={section.title}>
                   <details>
-                    <summary>{section.title}</summary>
+                    <summary style={styles.summary}>{section.title}</summary>
                     <pre style={styles.pre}>
                       {readSection(data.buf, section)}
                     </pre>
@@ -126,4 +126,5 @@ const styles = {
   },
   main: { flex: 1, overflowY: "scroll", overflowX: "hidden" },
   pre: { wordWrap: "break-word", whiteSpace: "pre-wrap" },
+  summary: { cursor: "pointer" },
 } as const;
