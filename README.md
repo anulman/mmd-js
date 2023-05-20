@@ -54,6 +54,28 @@ This API powers the `bin/demo.ts` script, which takes a MultiMarkdown file and:
 
 If you would like to do something `mmd-js` does not yet support, please [open an issue](https://github.com/anulman/mmd-js/issues/new).
 
+### Wasm Notes
+
+`mmd-js` also exposes a WebAssembly interface, with a few minor differences:
+
+```ts
+// Import the `/wasm.js` JS module instead of the default one
+import * as mmd from "mmd-js/wasm.js";
+
+// Load and instantiate the WebAssembly `.wasm` module.
+// You may optionally pass a string (or string-returning function) to tell
+// the JS where to find the `.wasm` file, if it is having trouble.
+await mmd.load();
+
+// Now you can use the same `mmd.*` APIs as above, albeit with
+// browser-friendly `ArrayBuffer`s instead of Node.js `Buffer`s.
+const buf = new TextEncoder().encode(
+  "Title: My Document\n\n# Header\n\nSome body text"
+);
+
+// ...
+```
+
 ## Development
 
 ### Installation
