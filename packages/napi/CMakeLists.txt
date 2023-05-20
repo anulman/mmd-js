@@ -28,15 +28,5 @@ set_target_properties(${PROJECT_NAME}
   SUFFIX ".node"
 )
 
-# Link the framework
-add_subdirectory(${MMD_LIB_PATH} ${CMAKE_CURRENT_BINARY_DIR}/Release)
-target_compile_definitions(libMultiMarkdown PUBLIC DISABLE_OBJECT_POOL=1)
-
-target_link_libraries(${PROJECT_NAME}
-  PRIVATE
-    ${CMAKE_JS_LIB}
-    libMultiMarkdown
-)
-
 # define NAPI_VERSION
 target_compile_definitions(${PROJECT_NAME} PRIVATE NAPI_VERSION=4)

@@ -29,10 +29,3 @@ set(SOURCE_FILES mmd.c)
 
 # Define the executable
 add_executable(mmd ${SOURCE_FILES})
-
-# Add MultiMarkdown as a subdirectory so it's built with our project
-add_subdirectory(MultiMarkdown-6)
-target_compile_definitions(libMultiMarkdown PUBLIC DISABLE_OBJECT_POOL=1)
-
-# Link against the static library
-target_link_libraries(mmd libMultiMarkdown)

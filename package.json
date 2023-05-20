@@ -10,17 +10,17 @@
     "build:wasm": "npm run wasm:build",
     "build:js": "tsc -p . --noEmit false",
     "build": "concurrently --kill-others-on-fail -s all \"npm:build:napi\" \"npm:build:wasm\" \"npm:build:js\"",
-    "demo": "ts-node bin/demo.ts",
-    "napi:compile": "cmake-js compile -d packages/napi -O build/napi",
-    "wasm:configure": "emcmake cmake -S packages/wasm -B build/wasm",
+    "demo:bin": "ts-node bin/demo.ts",
+    "demo:web": "npm -C demo run dev",
+    "napi:compile": "cmake-js compile -O build/napi",
+    "wasm:configure": "emcmake cmake -B build/wasm",
     "wasm:build": "emmake make -C build/wasm",
-    "prepublish": "npm run build && cp -f build/wasm/mmd.wasm mmd.wasm"
+    "prepublish": "npm run build && cp -f build/wasm/packages/wasm/mmd.wasm mmd.wasm && cp -f build/wasm/packages/wasm/mmd.js mmd.wasm.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bindings": "^1.5.0",
     "cmake-js": "^7.2.1",
     "node-addon-api": "^6.1.0"
   },

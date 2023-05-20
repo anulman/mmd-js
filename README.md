@@ -102,7 +102,8 @@ pnpm install
 ```bash
 pnpm build:addon # builds the native addon
 pnpm build # builds the `index.js` and `index.d.ts` files
-pnpm demo # invokes `bin/demo.ts`; pass it a filepath
+pnpm demo:bin # invokes `bin/demo.ts`; pass it a filepath
+pnpm demo:web # starts the `demo/` dir's next.js dev server
 ```
 
 ### Publishing
@@ -111,11 +112,3 @@ pnpm demo # invokes `bin/demo.ts`; pass it a filepath
 pnpm version [patch|minor|major] # uptick the version
 pnpm publish # publish to the npm registry
 ```
-
-## Todo
-
-- [x] Figure out CMake-js + submodule setup for npm
-- [ ] Let the user configure which extensions to enable on the MMD engine
-- [ ] Consider shipping pre-built binaries
-- [ ] Test?
-- [ ] Add more APIs?

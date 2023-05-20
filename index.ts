@@ -1,9 +1,10 @@
-import bindings from "bindings";
+import { createRequire } from "module";
 import type * as m from "./types.js";
 
 export * from "./types.js";
 
-const mmd = bindings("mmd-js");
+const require = createRequire(import.meta.url);
+const mmd = require("./build/napi/Release/mmd-js.node") as typeof m;
 
 export const parse = (input: Buffer): m.Token => mmd.parse(input);
 export const ready = () => Promise.resolve();
