@@ -11,10 +11,10 @@ EM_JS(void*, create_js_object, (token* obj), {
   }
 
   const jsObj = {
-    type: HEAP32[obj >> 2],
-    can_open: !!HEAP8[obj + 4],
-    can_close: !!HEAP8[obj + 5],
-    unmatched: !!HEAP8[obj + 6],
+    type: HEAPU16[obj >> 1],    // Use HEAPU16 here, as type is a 2-byte unsigned short
+    can_open: HEAP16[(obj + 2) >> 1],   // Use HEAP16 here, as can_open is a 2-byte short
+    can_close: HEAP16[(obj + 4) >> 1],  // Same with can_close
+    unmatched: HEAP16[(obj + 6) >> 1],  // And unmatched
     start: HEAP32[(obj + 8) >> 2],
     len: HEAP32[(obj + 12) >> 2],
     out_start: HEAP32[(obj + 16) >> 2],
