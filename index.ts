@@ -1,6 +1,8 @@
 import bindings from "bindings";
 import type * as m from "./types.js";
 
+export * from "./types.js";
+
 const mmd = bindings("mmd-js");
 
 export const parse = (input: Buffer): m.Token => mmd.parse(input);

@@ -1,6 +1,6 @@
 /// <reference types="node" />
 
-export declare enum Type {
+export enum Type {
   DOC_START_TOKEN = 0,
   LINE_HR = 1,
   LINE_SETEXT_1 = 2,

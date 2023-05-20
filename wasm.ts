@@ -1,6 +1,8 @@
 import type * as m from "./types.js";
 import Mmd from "./mmd.wasm.js";
 
+export * from "./types.js";
+
 export type Wasm = {
   _malloc: (size: number) => number;
   _free: (ptr: number) => void;
@@ -10,13 +12,15 @@ export type Wasm = {
   tokenObjectMap: Map<number, m.Token>;
 };
 
-const decoder = new TextDecoder();
+const defaultDecoder = new TextDecoder();
 const tokenObjectMap: Map<number, m.Token> = new Map();
 
 let _wasm: Wasm;
 let _wasmPromise: undefined | Promise<Wasm>;
 
-export const load = async (locateFile: string | ((path: string) => string)) => {
+export const load = async (
+  locateFile?: string | ((path: string) => string)
+) => {
   if (_wasm) {
     console.warn("wasm already loaded; returning cached instance");
 
@@ -78,8 +82,11 @@ export const parse = (input: ArrayBuffer): m.Token => {
   return root;
 };
 
-export const read = (input: ArrayBuffer, token: m.Token) =>
-  decoder.decode(input.slice(token.start, token.start + token.len));
+export const read = (
+  input: ArrayBuffer,
+  token: m.Token,
+  decoder = defaultDecoder
+) => decoder.decode(input.slice(token.start, token.start + token.len));
 
 export const readTitle = (input: ArrayBuffer, token: m.Token) =>
   read(input, token)
