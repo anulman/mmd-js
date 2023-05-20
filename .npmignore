@@ -13,6 +13,7 @@ packages/**/*
 !build/wasm/*.js
 !build/wasm/*.wasm
 
+!packages/napi/*
 !packages/MultiMarkdown-6/CMakeLists.txt
 !packages/MultiMarkdown-6/LICENSE
 !packages/MultiMarkdown-6/lemon/*
