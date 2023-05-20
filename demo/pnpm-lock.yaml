@@ -17,8 +17,8 @@ dependencies:
     specifier: 13.4.3
     version: 13.4.3(eslint@8.41.0)(typescript@5.0.4)
   mmd-js:
-    specifier: ^0.2.3
-    version: 0.2.3
+    specifier: ^0.2.4
+    version: 0.2.4
   next:
     specifier: 13.4.3
     version: 13.4.3(react-dom@18.2.0)(react@18.2.0)
@@ -30,7 +30,7 @@ dependencies:
     version: 18.2.0(react@18.2.0)
   react-drag-drop-files:
     specifier: ^2.3.10
-    version: 2.3.10(react-dom@18.2.0)(react-is@16.13.1)(react@18.2.0)
+    version: 2.3.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)
   typescript:
     specifier: 5.0.4
     version: 5.0.4
@@ -842,7 +842,7 @@ packages:
       babel-plugin-syntax-jsx: 6.18.0
       lodash: 4.17.21
       picomatch: 2.3.1
-      styled-components: 5.3.10(react-dom@18.2.0)(react-is@16.13.1)(react@18.2.0)
+      styled-components: 5.3.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)
     dev: false
 
   /babel-plugin-syntax-jsx@6.18.0:
@@ -2382,8 +2382,8 @@ packages:
     hasBin: true
     dev: false
 
-  /mmd-js@0.2.3:
-    resolution: {integrity: sha512-jiRApmhZYvNFBvqvvL4L9a2pFRG4ykzI0GKKpCpm3eTwuQCcwURiEA/E1ZX1ImDb8U/v5CyBG17BkgE2MRMr7A==}
+  /mmd-js@0.2.4:
+    resolution: {integrity: sha512-52rQHCd40JF7Kx8C3fs9UHWdT23tFQwz4Oro3APCLHervsFGDAAnkjEgIzcgVQ0q4UBk1GPB6ZCyRcupHL+AAg==}
     requiresBuild: true
     dependencies:
       cmake-js: 7.2.1
@@ -2727,7 +2727,7 @@ packages:
       scheduler: 0.23.0
     dev: false
 
-  /react-drag-drop-files@2.3.10(react-dom@18.2.0)(react-is@16.13.1)(react@18.2.0):
+  /react-drag-drop-files@2.3.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-Fv614W9+OtXFB5O+gjompTxQZLYGO7wJeT4paETGiXtiADB9yPOMGYD4A3PMCTY9Be874/wcpl+2dm3MvCIRzg==}
     peerDependencies:
       react: ^18.0.0
@@ -2736,13 +2736,17 @@ packages:
       prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      styled-components: 5.3.10(react-dom@18.2.0)(react-is@16.13.1)(react@18.2.0)
+      styled-components: 5.3.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)
     transitivePeerDependencies:
       - react-is
     dev: false
 
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
+    dev: false
+
+  /react-is@18.2.0:
+    resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
     dev: false
 
   /react@18.2.0:
@@ -3040,7 +3044,7 @@ packages:
     engines: {node: '>=8'}
     dev: false
 
-  /styled-components@5.3.10(react-dom@18.2.0)(react-is@16.13.1)(react@18.2.0):
+  /styled-components@5.3.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-3kSzSBN0TiCnGJM04UwO1HklIQQSXW7rCARUk+VyMR7clz8XVlA3jijtf5ypqoDIdNMKx3la4VvaPFR855SFcg==}
     engines: {node: '>=10'}
     peerDependencies:
@@ -3058,7 +3062,7 @@ packages:
       hoist-non-react-statics: 3.3.2
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      react-is: 16.13.1
+      react-is: 18.2.0
       shallowequal: 1.1.0
       supports-color: 5.5.0
     dev: false
