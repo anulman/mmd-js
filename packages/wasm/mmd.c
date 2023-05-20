@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "MultiMarkdown-6/src/libMultiMarkdown.h"
-#include "MultiMarkdown-6/src/token.h"
+#include "../MultiMarkdown-6/src/libMultiMarkdown.h"
+#include "../MultiMarkdown-6/src/token.h"
 
 EM_JS(void*, create_js_object, (token* obj), {
   if (Module.tokenObjectMap.has(obj)) {

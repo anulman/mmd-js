@@ -5,7 +5,6 @@ cmake_policy(SET CMP0042 NEW)
 set (BUILD_WITH_INSTALL_RPATH 1)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
 set (CMAKE_CXX_STANDARD 11)
-set (MMD_LIB_PATH MultiMarkdown-6)
 set (CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 project (mmd-js)
@@ -19,7 +18,7 @@ execute_process(COMMAND node -p "require('node-addon-api').include"
 string(REGEX REPLACE "[\r\n\"]" "" NODE_ADDON_API_DIR ${NODE_ADDON_API_DIR})
 
 add_library(mmd_objs OBJECT ${SOURCE_FILES} ${CMAKE_JS_SRC})
-target_include_directories(mmd_objs PRIVATE ${CMAKE_JS_INC} ${NODE_ADDON_API_DIR} ${MMD_LIB_PATH}/src)
+target_include_directories(mmd_objs PRIVATE ${CMAKE_JS_INC} ${NODE_ADDON_API_DIR} ../MultiMarkdown-6/src)
 
 add_library(${PROJECT_NAME} SHARED $<TARGET_OBJECTS:mmd_objs>)
 set_target_properties(${PROJECT_NAME}
