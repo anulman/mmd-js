@@ -5,7 +5,7 @@ Node.js scripts use it to parse Multimarkdown documents and walk their ASTs.
 
 ## Demo / Context
 
-[![mmd-js demo ��MultiMarkdown AST parser & walk routines in Node.js](https://cdn.loom.com/sessions/thumbnails/e486a43d1ea34a6e9adde06837237fd0-with-play.gif)](https://www.loom.com/share/e486a43d1ea34a6e9adde06837237fd0 "mmd-js demo ��MultiMarkdown AST parser & walk routines in Node.js")
+[![mmd-js demo](https://cdn.loom.com/sessions/thumbnails/b27203b5271a40a8a6a46897c7d928d4-with-play.gif)](https://www.loom.com/share/b27203b5271a40a8a6a46897c7d928d4 "mmd-js demo")
 
 ## Installation
 
@@ -103,8 +103,11 @@ pnpm run wasm:configure
 ### Build && Run
 
 ```bash
-pnpm build:addon # builds the native addon
-pnpm build # builds the `index.js` and `index.d.ts` files
+pnpm build:napi # builds a node.js addon
+pnpm build:wasm # builds a wasm module
+pnpm build:js # compiles and emits typescript to js
+pnpm build # runs all of the above
+
 pnpm demo:bin # invokes `bin/demo.ts`; pass it a filepath
 pnpm demo:web # starts the `demo/` dir's next.js dev server
 ```
