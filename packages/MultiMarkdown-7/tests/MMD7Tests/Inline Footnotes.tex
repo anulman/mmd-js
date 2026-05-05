@@ -1,0 +1,15 @@
+\input{mmd7-article-leader}
+\def\mytitle{Inline Footnotes}
+\input{mmd7-article-begin}
+
+Inline.\footnote{foo \emph{bar}}
+
+Inline.\footnote{foo \emph{bar}
+\href{/bar}{foo}\footnote{\href{/bar}{/bar}}
+\textbf{foo}.}
+
+Inline.\footnote{foo \emph{bar}}
+
+Inline.\footnote{foo}\footnote{foo}\footnote{bar}
+\input{mmd7-article-footer}
+\end{document}

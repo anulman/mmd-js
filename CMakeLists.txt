@@ -1,18 +1,18 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.28)
+project(mmd-js-superbuild)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
-add_subdirectory("packages/MultiMarkdown-6")
-target_compile_definitions(libMultiMarkdown PUBLIC DISABLE_OBJECT_POOL=1)
+set(TEST 1)
+add_subdirectory("packages/MultiMarkdown-7")
 
 if(EMSCRIPTEN)
   add_subdirectory("packages/wasm")
-  target_link_libraries(mmd libMultiMarkdown)
+  target_link_libraries(mmd libMultiMarkdown7)
 else()
   add_subdirectory("packages/napi")
   target_link_libraries(mmd-js
     PRIVATE
       ${CMAKE_JS_LIB}
-      libMultiMarkdown
+      libMultiMarkdown7
   )
 endif()
