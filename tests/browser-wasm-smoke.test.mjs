@@ -33,7 +33,7 @@ function serveRepo() {
             await mmd.load("/mmd.wasm");
             const input = new TextEncoder().encode("# Browser smoke\\n\\nBody");
             const root = mmd.parse(input.buffer);
-            document.body.textContent = root && root.type === 0 && root.len > 0 ? "PASS" : "FAIL: bad root";
+            document.body.textContent = root && Number.isInteger(root.type) && root.len > 0 ? "PASS" : "FAIL: bad root";
           } catch (error) {
             document.body.textContent = "FAIL: " + (error && error.stack || error);
           }

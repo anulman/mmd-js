@@ -5,80 +5,86 @@
 #include <napi.h>
 
 extern "C" {
-  #include <d_string.h>
-  #include <libMultiMarkdown.h>
-  #include <mmd.h>
-  #include <token.h>
+  #include <libMultiMarkdown7.h>
+  #include <mmd_node_pool.h>
+  #include <vector_line_node.h>
+  #include <mmd_parser_hand_2.h>
 }
 
-Napi::Object WrapToken(Napi::Env env, token *t, std::map<token *, Napi::Object> *tokens) {
-  auto search = tokens->find(t);
+namespace {
 
-  if (search != tokens->end()) {
+Napi::Number NumberFromSize(Napi::Env env, size_t value) {
+  return Napi::Number::New(env, static_cast<double>(value));
+}
+
+Napi::Object WrapNode(Napi::Env env, mmd_node *node, std::map<mmd_node *, Napi::Object> *nodes) {
+  auto search = nodes->find(node);
+  if (search != nodes->end()) {
     return search->second;
   }
 
   auto obj = Napi::Object::New(env);
-  tokens->emplace(t, obj);
+  nodes->emplace(node, obj);
 
-  obj.Set("type", Napi::Number::New(env, t->type));
-  obj.Set("can_open", Napi::Value::From(env, t->can_open == 1));
-  obj.Set("can_close", Napi::Value::From(env, t->can_close == 1));
-  obj.Set("unmatched", Napi::Value::From(env, t->unmatched == 1));
+  obj.Set("type", Napi::Number::New(env, node->type));
+  obj.Set("start", NumberFromSize(env, node->start));
+  obj.Set("len", NumberFromSize(env, node->len));
 
-  obj.Set("start", Napi::Number::New(env, t->start));
-  obj.Set("len", Napi::Number::New(env, t->len));
-
-  obj.Set("out_start", Napi::Number::New(env, t->out_start));
-  obj.Set("out_len", Napi::Number::New(env, t->out_len));
-
-  if (t->next) {
-    obj.Set("next", WrapToken(env, t->next, tokens));
+  if (MMD_NODE_IS_LINE(node)) {
+    auto line = reinterpret_cast<mmd_line_node *>(node);
+    obj.Set("c_start", NumberFromSize(env, line->c_start));
+    obj.Set("c_len", NumberFromSize(env, line->c_len));
   }
 
-  if (t->prev) {
-    obj.Set("prev", WrapToken(env, t->prev, tokens));
+  if (node->next) {
+    obj.Set("next", WrapNode(env, node->next, nodes));
   }
 
-  if (t->child) {
-    obj.Set("child", WrapToken(env, t->child, tokens));
+  if (node->child) {
+    obj.Set("child", WrapNode(env, node->child, nodes));
   }
 
-  if (t->tail) {
-    obj.Set("tail", WrapToken(env, t->tail, tokens));
+  if (node->tail) {
+    obj.Set("tail", WrapNode(env, node->tail, nodes));
   }
 
-  if (t->mate) {
-    obj.Set("mate", WrapToken(env, t->mate, tokens));
+  if (node->content) {
+    obj.Set("content", WrapNode(env, node->content, nodes));
   }
 
   return obj;
 }
 
+} // namespace
+
 Napi::Value Parse(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  auto text = new Napi::Buffer<char>(env, info[0]);
+  auto text = info[0].As<Napi::Buffer<char>>();
 
-  mmd_engine *engine = mmd_engine_create_with_string(text->Data(), EXT_NOTES);
-  mmd_engine_parse_string(engine);
+  read_ctx *ctx = read_ctx_new(0);
+  if (ctx == nullptr) {
+    Napi::Error::New(env, "read_ctx_new returned nullptr").ThrowAsJavaScriptException();
+    return env.Undefined();
+  }
 
-  auto root = mmd_engine_root(engine);
+  vector_line_node *lines = vector_line_node_new(0);
+  mmd_node_pool *pool = mmd_node_pool_new(0);
+  mmd_node *root = mmd_parse_text(text.Data(), text.Length(), lines, pool, ctx, 0);
 
   if (root == nullptr) {
-      Napi::Error::New(env, "root is nullptr").ThrowAsJavaScriptException();
-      return env.Undefined();
+    vector_line_node_free(lines);
+    mmd_node_pool_free(pool);
+    read_ctx_free(ctx);
+    Napi::Error::New(env, "root is nullptr").ThrowAsJavaScriptException();
+    return env.Undefined();
   }
 
-  if (root->type < 0) {  // or any other condition that indicates an invalid number
-      Napi::Error::New(env, "root->type is not a valid number").ThrowAsJavaScriptException();
-      return env.Undefined();
-  }
+  std::map<mmd_node *, Napi::Object> nodes_map;
+  auto obj = WrapNode(env, root, &nodes_map);
 
-  auto tokens_map = new std::map<token *, Napi::Object>();
-  auto obj = WrapToken(env, root, tokens_map);
-
-  // Free the engine
-  mmd_engine_free(engine, true);
+  vector_line_node_free(lines);
+  mmd_node_pool_free(pool);
+  read_ctx_free(ctx);
 
   return obj;
 }
