@@ -12,10 +12,11 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} \
   -s INVOKE_RUN=0 \
   -s STANDALONE_WASM=1 \
   -s ASSERTIONS=0 \
-  -s ENVIRONMENT=web,webview,worker \
+  -s ENVIRONMENT=web,webview,worker,node \
   -s INCOMING_MODULE_JS_API=rootToken,tokenObjectMap,locateFile,arguments \
   -s DEFAULT_LIBRARY_FUNCS_TO_INCLUDE=malloc,free \
   -s EXPORTED_FUNCTIONS=_malloc,_free,_parse \
+  -s EXPORTED_RUNTIME_METHODS=HEAPU8 \
   -s WASM_BIGINT=1 \
   -s STACK_SIZE=262144 \
   --no-entry \
