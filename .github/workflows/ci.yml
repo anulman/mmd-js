@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20, 24]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Enable Corepack pnpm
+        run: corepack prepare pnpm@8.15.9 --activate
+
+      - name: Set up Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: latest
+          actions-cache-folder: emsdk-cache
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build JavaScript
+        run: pnpm run build:js
+
+      - name: Build native addon
+        run: pnpm run build:napi
+
+      - name: Configure WASM
+        run: pnpm run wasm:configure
+
+      - name: Build WASM
+        run: pnpm run build:wasm
+
+      - name: Test
+        env:
+          CHROMIUM_BIN: /usr/bin/google-chrome
+        run: pnpm test

@@ -1,11 +1,21 @@
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { extname, resolve } from "node:path";
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import test from "node:test";
 
-const chromium = process.env.CHROMIUM_BIN ?? "/usr/bin/chromium-browser";
+const chromium = process.env.CHROMIUM_BIN ?? [
+  "/usr/bin/chromium-browser",
+  "/usr/bin/chromium",
+  "/usr/bin/google-chrome",
+  "/usr/bin/google-chrome-stable",
+].find((candidate) => existsSync(candidate));
+
+if (!chromium) {
+  throw new Error("Set CHROMIUM_BIN to a Chromium/Chrome executable");
+}
 const mime = new Map([
   [".html", "text/html; charset=utf-8"],
   [".js", "text/javascript; charset=utf-8"],
