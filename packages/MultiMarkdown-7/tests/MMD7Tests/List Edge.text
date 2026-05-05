@@ -1,8 +1,0 @@
-title:	List Edge
-latexconfig:	article
-
-- foo
-
-* bar
-* foo
-	* bar
