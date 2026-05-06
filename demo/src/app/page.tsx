@@ -6,33 +6,77 @@ import * as dragdrop from "react-drag-drop-files";
 type Data = { buf: ArrayBuffer; title: string; sections: Section[] };
 type Section = { title: string; startIndex: number; endIndex: number };
 
+const sampleDocument = `Title: MMD7 Demo Smoke
+
+# First Section
+
+This section was parsed by the MMD7 WASM AST.
+
+# Second Section
+
+The browser demo is using the local mmd-js package.
+
+[^demo]: A deterministic footnote stops section collation.
+`;
+
 export default function Home() {
   const [data, setParsed] = React.useState<Data | null>(null);
+  const [input, setInput] = React.useState(sampleDocument);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const parseBuffer = React.useCallback(async (buf: ArrayBuffer) => {
+    setError(null);
+    try {
+      await mmd.load("/mmd.wasm");
+      setParsed(collateSections(buf, mmd.parse(buf)));
+    } catch (error) {
+      setError(error instanceof Error ? error.message : String(error));
+    }
+  }, []);
+
   const handleDrop = async (file: File) => {
-    const buf = await readFile(file);
-    setParsed(collateSections(buf, mmd.parse(buf)));
+    await parseBuffer(await readFile(file));
+  };
+
+  const handleParseText = async () => {
+    await parseBuffer(new TextEncoder().encode(input).buffer);
   };
 
   return (
     <div style={styles.page}>
-      <dragdrop.FileUploader
-        handleChange={handleDrop}
-        label="Select a MultiMarkdown file"
-      />
+      <aside style={styles.aside}>
+        <dragdrop.FileUploader
+          handleChange={handleDrop}
+          label="Select a MultiMarkdown file"
+        />
+        <label style={styles.label} htmlFor="mmd-input">
+          Or edit the sample fixture
+        </label>
+        <textarea
+          id="mmd-input"
+          aria-label="MultiMarkdown input"
+          style={styles.textarea}
+          value={input}
+          onChange={(event) => setInput(event.target.value)}
+        />
+        <button type="button" onClick={() => void handleParseText()}>
+          Parse sample
+        </button>
+        {error ? <p role="alert">{error}</p> : null}
+      </aside>
       <main style={styles.main}>
         {!data ? (
           <p>Load data to see the sections</p>
         ) : (
           <>
+            <p>MMD7 WASM loaded from /mmd.wasm</p>
             <h1>{data.title}</h1>
             <ul>
               {data.sections.map((section) => (
-                <li key={section.title}>
-                  <details>
+                <li key={`${section.title}:${section.startIndex}`}>
+                  <details open>
                     <summary style={styles.summary}>{section.title}</summary>
-                    <pre style={styles.pre}>
-                      {readSection(data.buf, section)}
-                    </pre>
+                    <pre style={styles.pre}>{readSection(data.buf, section)}</pre>
                   </details>
                 </li>
               ))}
@@ -44,14 +88,12 @@ export default function Home() {
   );
 }
 
-const readFile = async (file: File) => {
-  await mmd.load();
-
-  return new Promise<ArrayBuffer>((resolve, reject) => {
+const readFile = async (file: File) =>
+  new Promise<ArrayBuffer>((resolve, reject) => {
     const reader = new FileReader();
 
-    reader.onload = (e) => {
-      const buf = e.target?.result;
+    reader.onload = (event) => {
+      const buf = event.target?.result;
 
       if (buf instanceof ArrayBuffer) {
         resolve(buf);
@@ -60,29 +102,21 @@ const readFile = async (file: File) => {
       }
     };
 
+    reader.onerror = () => reject(reader.error ?? new Error("Failed to read file"));
     reader.readAsArrayBuffer(file);
   });
-};
 
-const collateSections = (buf: ArrayBuffer, root: mmd.Token | null) => {
-  if (!root) {
-    return null;
-  }
+const collateSections = (buf: ArrayBuffer, root: mmd.Node): Data => {
+  let title = "Untitled MultiMarkdown document";
+  const sections: Section[] = [];
 
-  let title = "";
-  let sections: Array<{
-    title: string;
-    startIndex: number;
-    endIndex: number;
-  }> = [];
-
-  mmd.walk(root, (token) => {
-    switch (token.type) {
+  mmd.walk(root, (node) => {
+    switch (node.type) {
       case mmd.Type.LINE_META: {
-        const [key, value] = mmd.read(buf, token).split(":");
+        const [key, ...value] = mmd.read(buf, node).split(":");
 
         if (/title/i.test(key)) {
-          title = value.trim();
+          title = value.join(":").trim();
         }
         break;
       }
@@ -90,12 +124,12 @@ const collateSections = (buf: ArrayBuffer, root: mmd.Token | null) => {
         const lastSection = sections.at(-1);
 
         if (lastSection) {
-          lastSection.endIndex = token.start;
+          lastSection.endIndex = node.start;
         }
 
         sections.push({
-          title: mmd.readTitle(buf, token),
-          startIndex: token.next!.start,
+          title: mmd.readTitle(buf, node),
+          startIndex: node.next?.start ?? node.start + node.len,
           endIndex: -1,
         });
         break;
@@ -103,13 +137,19 @@ const collateSections = (buf: ArrayBuffer, root: mmd.Token | null) => {
       case mmd.Type.BLOCK_DEF_FOOTNOTE: {
         const lastSection = sections.at(-1);
 
-        if (lastSection) {
-          lastSection.endIndex = token.start;
+        if (lastSection && lastSection.endIndex === -1) {
+          lastSection.endIndex = node.start;
         }
         break;
       }
     }
   });
+
+  for (const section of sections) {
+    if (section.endIndex === -1) {
+      section.endIndex = buf.byteLength;
+    }
+  }
 
   return { buf, title, sections };
 };
@@ -124,6 +164,14 @@ const styles = {
     minHeight: "calc(100vh - 1rem)",
     gap: "1rem",
   },
+  aside: {
+    width: "22rem",
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.75rem",
+  },
+  label: { fontWeight: 600 },
+  textarea: { minHeight: "20rem", fontFamily: "monospace" },
   main: { flex: 1, overflowY: "scroll", overflowX: "hidden" },
   pre: { wordWrap: "break-word", whiteSpace: "pre-wrap" },
   summary: { cursor: "pointer" },
