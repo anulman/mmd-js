@@ -10,7 +10,7 @@
     "node": "24.x"
   },
   "scripts": {
-    "install": "node-gyp-build || npm run prebuild:napi",
+    "install": "node scripts/check-napi-prebuild.mjs || npm run prebuild:napi",
     "build:napi": "npm run prebuild:napi",
     "build:wasm": "npm run wasm:build",
     "build:js": "tsc -p . --noEmit false",
@@ -67,6 +67,7 @@
     "mmd.wasm.js",
     "mmd.wasm.d.ts",
     "cmake/**",
+    "scripts/check-napi-prebuild.mjs",
     "scripts/copy-napi-prebuild.mjs",
     "prebuilds/**",
     "packages/napi/**"
