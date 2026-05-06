@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 add_subdirectory("packages/MultiMarkdown-6")
 target_compile_definitions(libMultiMarkdown PUBLIC DISABLE_OBJECT_POOL=1)
 
