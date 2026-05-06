@@ -100,6 +100,25 @@ pnpm install
 pnpm run wasm:configure
 ```
 
+### Validation
+
+The characterization tests use `packages/MultiMarkdown-6/tests/MMD6Tests/Integrated.text` from the submodule and compare the normalized token graph against `tests/fixtures/mmd6-integrated.snapshot.json`.
+
+Recommended validation commands:
+
+```bash
+corepack pnpm@8.15.9 install --frozen-lockfile
+corepack pnpm@8.15.9 run build:js
+./node_modules/.bin/cmake-js compile -O build/napi -C --CD CMAKE_POSITION_INDEPENDENT_CODE=ON
+source /home/clawy/emsdk/emsdk_env.sh && corepack pnpm@8.15.9 run wasm:configure && corepack pnpm@8.15.9 run build:wasm
+corepack pnpm@8.15.9 test
+```
+
+Notes:
+
+- The native addon currently consumes a C string, so the snapshot/test path appends an explicit NUL terminator before native parsing. WASM already writes a NUL terminator into linear memory.
+- The Chromium smoke test uses `/usr/bin/chromium-browser` by default; set `CHROMIUM_BIN=/path/to/chromium` if needed.
+
 ### Build && Run
 
 ```bash
@@ -107,6 +126,9 @@ pnpm build:napi # builds a node.js addon
 pnpm build:wasm # builds a wasm module
 pnpm build:js # compiles and emits typescript to js
 pnpm build # runs all of the above
+
+pnpm test # runs native, Node-loaded WASM, and Chromium WASM smoke tests
+pnpm test:update-snapshots # refreshes committed characterization snapshots
 
 pnpm demo:bin # invokes `bin/demo.ts`; pass it a filepath
 pnpm demo:web # starts the `demo/` dir's next.js dev server

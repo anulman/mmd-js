@@ -3,9 +3,12 @@ cmake_policy(SET CMP0091 NEW)
 cmake_policy(SET CMP0042 NEW)
 
 set (BUILD_WITH_INSTALL_RPATH 1)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+if (APPLE AND CMAKE_CXX_COMPILER_ID MATCHES "AppleClang|Clang")
+  add_compile_options(-stdlib=libc++)
+endif()
 
 project (mmd-js)
 file(GLOB SOURCE_FILES "mmd.cpp")
