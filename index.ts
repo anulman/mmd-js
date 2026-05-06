@@ -1,10 +1,13 @@
 import { createRequire } from "module";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type * as m from "./types.js";
 
 export * from "./types.js";
 
 const require = createRequire(import.meta.url);
-const mmd = require("./build/napi/Release/mmd-js.node") as typeof m;
+const root = path.dirname(fileURLToPath(import.meta.url));
+const mmd = require("node-gyp-build")(root) as typeof m;
 
 export const parse = (input: Buffer): m.Node => mmd.parse(input);
 export const ready = () => Promise.resolve();

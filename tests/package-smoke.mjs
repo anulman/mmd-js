@@ -34,7 +34,9 @@ try {
     "mmd.wasm.js",
     "mmd.wasm",
     "mmd.wasm.d.ts",
+    "prebuilds/linux-x64/node.napi.node",
     "packages/napi/mmd.cpp",
+    "scripts/copy-napi-prebuild.mjs",
   ]) {
     assert.ok(packedFiles.has(required), `npm package is missing ${required}`);
   }

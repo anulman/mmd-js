@@ -11,6 +11,9 @@ dependencies:
   node-addon-api:
     specifier: ^6.1.0
     version: 6.1.0
+  node-gyp-build:
+    specifier: ^4.8.4
+    version: 4.8.4
 
 devDependencies:
   '@swc/core':
@@ -605,6 +608,11 @@ packages:
 
   /node-api-headers@0.0.2:
     resolution: {integrity: sha512-YsjmaKGPDkmhoNKIpkChtCsPVaRE0a274IdERKnuc/E8K1UJdBZ4/mvI006OijlQZHCfpRNOH3dfHQs92se8gg==}
+    dev: false
+
+  /node-gyp-build@4.8.4:
+    resolution: {integrity: sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ==}
+    hasBin: true
     dev: false
 
   /npmlog@6.0.2:
