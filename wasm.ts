@@ -6,14 +6,14 @@ export * from "./types.js";
 export type Wasm = {
   _malloc: (size: number) => number;
   _free: (ptr: number) => void;
-  _parse: (inputPtr: number) => m.Token;
+  _parse: (inputPtr: number, inputLen: number) => number;
   HEAPU8: Uint8Array;
-  rootToken: m.Token | null;
-  tokenObjectMap: Map<number, m.Token>;
+  rootNode: m.Node | null;
+  nodeObjectMap: Map<number, m.Node>;
 };
 
 const defaultDecoder = new TextDecoder();
-const tokenObjectMap: Map<number, m.Token> = new Map();
+const nodeObjectMap: Map<number, m.Node> = new Map();
 
 let _wasm: Wasm;
 let _wasmPromise: undefined | Promise<Wasm>;
@@ -22,8 +22,6 @@ export const load = async (
   locateFile?: string | ((path: string) => string)
 ) => {
   if (_wasm) {
-    console.warn("wasm already loaded; returning cached instance");
-
     return _wasm;
   }
 
@@ -33,8 +31,8 @@ export const load = async (
 
   _wasmPromise = Mmd({
     arguments: [],
-    rootToken: null,
-    tokenObjectMap,
+    rootNode: null,
+    nodeObjectMap,
     locateFile: typeof locateFile === "string" ? () => locateFile : locateFile,
   });
 
@@ -53,7 +51,7 @@ export const load = async (
 export const ready = async () =>
   _wasm ?? _wasmPromise ?? Promise.reject("wasm not loaded nor loading");
 
-export const parse = (input: ArrayBuffer): m.Token => {
+export const parse = (input: ArrayBuffer): m.Node => {
   if (!_wasm) {
     throw new Error("load() must be called && complete before calling parse()");
   }
@@ -68,15 +66,15 @@ export const parse = (input: ArrayBuffer): m.Token => {
   dataOnHeap.set(new Uint8Array(input));
   dataOnHeap.set(new Uint8Array([0]), input.byteLength);
 
-  _wasm._parse(dataOnHeap.byteOffset);
+  const result = _wasm._parse(dataOnHeap.byteOffset, input.byteLength);
   _wasm._free(dataPtr);
 
-  const root = _wasm.rootToken;
-  _wasm.rootToken = null;
-  _wasm.tokenObjectMap.clear();
+  const root = _wasm.rootNode;
+  _wasm.rootNode = null;
+  _wasm.nodeObjectMap.clear();
 
-  if (!root) {
-    throw new Error("root token not found");
+  if (result !== 0 || !root) {
+    throw new Error("root node not found");
   }
 
   return root;
@@ -84,28 +82,32 @@ export const parse = (input: ArrayBuffer): m.Token => {
 
 export const read = (
   input: ArrayBuffer,
-  token: m.Token,
+  node: m.Node,
   decoder = defaultDecoder
-) => decoder.decode(input.slice(token.start, token.start + token.len));
+) => decoder.decode(input.slice(node.start, node.start + node.len));
 
-export const readTitle = (input: ArrayBuffer, token: m.Token) =>
-  read(input, token)
+export const readTitle = (input: ArrayBuffer, node: m.Node) =>
+  read(input, node)
     .replace(/^\s*#+\s*/, "")
     .replace(/\s*#+\s*$/, "");
 
 export const walk = (
-  token: m.Token,
-  fn: (token: m.Token) => void | { stopWalking: boolean }
+  node: m.Node,
+  fn: (node: m.Node) => void | { stopWalking: boolean }
 ) => {
-  if (fn(token)?.stopWalking) {
+  if (fn(node)?.stopWalking) {
     return;
   }
 
-  if (token.child) {
-    walk(token.child, fn);
+  if (node.child) {
+    walk(node.child, fn);
   }
 
-  if (token.next) {
-    walk(token.next, fn);
+  if (node.content) {
+    walk(node.content, fn);
+  }
+
+  if (node.next) {
+    walk(node.next, fn);
   }
 };

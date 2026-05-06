@@ -1,18 +1,18 @@
-import type { Token } from "./types.js";
+import type { Node } from "./types.js";
 
 export type MmdWasmModule = {
   _malloc: (size: number) => number;
   _free: (ptr: number) => void;
-  _parse: (inputPtr: number) => Token;
+  _parse: (inputPtr: number, inputLen: number) => number;
   HEAPU8: Uint8Array;
-  rootToken: Token | null;
-  tokenObjectMap: Map<number, Token>;
+  rootNode: Node | null;
+  nodeObjectMap: Map<number, Node>;
 };
 
 export type MmdWasmOptions = {
   arguments?: string[];
-  rootToken?: Token | null;
-  tokenObjectMap?: Map<number, Token>;
+  rootNode?: Node | null;
+  nodeObjectMap?: Map<number, Node>;
   locateFile?: (path: string) => string;
 };
 

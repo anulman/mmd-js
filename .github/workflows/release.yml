@@ -1,0 +1,131 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+-*"
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: "Run publish in dry-run mode"
+        type: boolean
+        default: true
+      npm-tag:
+        description: "Override npm dist-tag for manual dispatch; defaults to latest or prerelease channel"
+        type: string
+        required: false
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  npm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Enable Corepack pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.15.9 --activate
+
+      - name: Set up Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: latest
+          actions-cache-folder: emsdk-cache
+
+      - name: Resolve release metadata
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          package_version=$(node -p "require('./package.json').version")
+
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            tag="${GITHUB_REF_NAME}"
+            tag_version="${tag#v}"
+            if [[ "$tag_version" != "$package_version" ]]; then
+              echo "Tag version ($tag_version) must match package.json version ($package_version)" >&2
+              exit 1
+            fi
+          else
+            tag="v${package_version}"
+            tag_version="$package_version"
+          fi
+
+          prerelease="false"
+          npm_tag="latest"
+          if [[ "$tag_version" == *-* ]]; then
+            prerelease="true"
+            prerelease_part="${tag_version#*-}"
+            npm_tag="${prerelease_part%%.*}"
+          fi
+
+          if [[ -n "${{ inputs.npm-tag || '' }}" ]]; then
+            npm_tag="${{ inputs.npm-tag }}"
+          fi
+
+          if ! [[ "$npm_tag" =~ ^[A-Za-z0-9._-]+$ ]]; then
+            echo "Invalid npm tag: $npm_tag" >&2
+            exit 1
+          fi
+
+          {
+            echo "package-version=$package_version"
+            echo "tag=$tag"
+            echo "prerelease=$prerelease"
+            echo "npm-tag=$npm_tag"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Release tag: $tag"
+          echo "GitHub prerelease: $prerelease"
+          echo "npm dist-tag: $npm_tag"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build and test package artifact
+        env:
+          CHROMIUM_BIN: /usr/bin/google-chrome
+        run: |
+          pnpm run build:js
+          pnpm run build:napi
+          pnpm run wasm:configure
+          pnpm run build:wasm
+          pnpm test
+          pnpm run package:smoke
+
+      - name: Create GitHub Release for tag
+        if: github.event_name == 'push' && github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          args=("${{ steps.meta.outputs.tag }}" --repo "$GITHUB_REPOSITORY" --title "${{ steps.meta.outputs.tag }}" --generate-notes)
+          if [[ "${{ steps.meta.outputs.prerelease }}" == "true" ]]; then
+            args+=(--prerelease --latest=false)
+          else
+            args+=(--latest)
+          fi
+          gh release create "${args[@]}"
+
+      - name: Publish package dry run
+        if: github.event_name == 'workflow_dispatch' && inputs.dry-run
+        run: npm publish --dry-run --provenance --access public --tag "${{ steps.meta.outputs.npm-tag }}"
+
+      - name: Publish package
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && !inputs.dry-run)
+        run: npm publish --provenance --access public --tag "${{ steps.meta.outputs.npm-tag }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

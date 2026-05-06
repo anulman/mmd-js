@@ -54,3 +54,6 @@ jobs:
         env:
           CHROMIUM_BIN: /usr/bin/google-chrome
         run: pnpm test
+
+      - name: Package smoke
+        run: pnpm run package:smoke
