@@ -34,10 +34,23 @@ try {
     "mmd.wasm.js",
     "mmd.wasm",
     "mmd.wasm.d.ts",
+    "packages/MultiMarkdown-7/CMakeLists.txt",
+    "packages/MultiMarkdown-7/LICENSE",
     "packages/MultiMarkdown-7/src/libMultiMarkdown7.h",
+    "packages/MultiMarkdown-7/templates/version.h.in",
     "packages/napi/mmd.cpp",
   ]) {
     assert.ok(packedFiles.has(required), `npm package is missing ${required}`);
+  }
+
+  for (const excludedPrefix of [
+    "packages/MultiMarkdown-7/tests/",
+    "packages/MultiMarkdown-7/test/",
+  ]) {
+    assert.ok(
+      !files.some((file) => file.path.startsWith(excludedPrefix)),
+      `npm package should not include ${excludedPrefix}`
+    );
   }
 
   run("npm", ["init", "-y"], work);
