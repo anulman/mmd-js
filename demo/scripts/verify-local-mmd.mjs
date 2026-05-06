@@ -17,9 +17,10 @@ const packageDir = dirname(resolvedPackageJson);
 const stat = await lstat(packageDir);
 const actualPackageDir = stat.isSymbolicLink() ? await realpath(packageDir) : packageDir;
 const actualPackageJson = JSON.parse(await readFile(resolvedPackageJson, "utf8"));
+const rootPackageJson = JSON.parse(await readFile(resolve(repoRoot, "package.json"), "utf8"));
 
 assert.equal(actualPackageJson.name, "mmd-js", "demo resolved an unexpected package name");
-assert.equal(actualPackageJson.version, "0.3.0", "demo resolved an unexpected mmd-js version");
+assert.equal(actualPackageJson.version, rootPackageJson.version, "demo resolved an unexpected mmd-js version");
 assert.match(
   actualPackageDir,
   /node_modules[/\\]\.pnpm[/\\]file\+\.\.[/\\]node_modules[/\\]mmd-js$/,
