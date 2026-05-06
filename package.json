@@ -6,6 +6,9 @@
   "main": "index.js",
   "homepage": "https://mmd-js.vercel.app",
   "repository": "github:anulman/mmd-js",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "install": "npm run napi:compile || exit 0",
     "build:napi": "npm run napi:compile",
