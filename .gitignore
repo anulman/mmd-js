@@ -4,13 +4,13 @@ node_modules/
 
 *.js
 *.d.ts
-!mmd.wasm.d.ts
 *.wasm
-!index.js
-!types.js
-!wasm.js
-!demo/public/mmd.wasm
-!mmd.wasm.js
-!index.d.ts
-!types.d.ts
-!wasm.d.ts
+!/index.js
+!/types.js
+!/wasm.js
+!/mmd.wasm.js
+!/index.d.ts
+!/types.d.ts
+!/wasm.d.ts
+!/mmd.wasm.d.ts
+!/demo/public/mmd.wasm
