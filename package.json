@@ -10,7 +10,7 @@
     "node": "24.x"
   },
   "scripts": {
-    "install": "node scripts/check-napi-prebuild.mjs || npm run prebuild:napi",
+    "install": "node scripts/prepare-installed-package.mjs && (node scripts/check-napi-prebuild.mjs || npm run prebuild:napi)",
     "build:napi": "npm run prebuild:napi",
     "build:wasm": "npm run wasm:build",
     "build:js": "tsc -p . --noEmit false",
@@ -70,6 +70,10 @@
     "scripts/check-napi-prebuild.mjs",
     "scripts/copy-napi-prebuild.mjs",
     "prebuilds/**",
-    "packages/napi/**"
+    "packages/napi/**",
+    "scripts/prepare-installed-package.mjs",
+    "index.ts",
+    "types.ts",
+    "wasm.ts"
   ]
 }
