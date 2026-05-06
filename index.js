@@ -1,7 +1,10 @@
 import { createRequire } from "module";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 export * from "./types.js";
 const require = createRequire(import.meta.url);
-const mmd = require("./build/napi/Release/mmd-js.node");
+const root = path.dirname(fileURLToPath(import.meta.url));
+const mmd = require("node-gyp-build")(root);
 export const parse = (input) => mmd.parse(input);
 export const ready = () => Promise.resolve();
 export const read = (input, node) => input.subarray(node.start, node.start + node.len).toString();
