@@ -14,7 +14,7 @@ if (!chromiumExecutable) {
   throw new Error("Set CHROMIUM_BIN to a Chromium/Chrome executable");
 }
 
-const integratedFixture = readFileSync(new URL("../../packages/MultiMarkdown-7/tests/MMD7Tests/Integrated.text", import.meta.url), "utf8");
+const integratedFixture = readFileSync(new URL("../../tests/fixtures/mmd7/Integrated.text", import.meta.url), "utf8");
 
 const port = Number(process.env.PORT ?? 3123);
 const child = spawn("corepack", ["pnpm@8.15.9", "start", "--", "-p", String(port)], {

@@ -86,12 +86,8 @@ const buf = new TextEncoder().encode(
 Tested with `pnpm`, but `npm` should work fine.
 
 ```bash
-# you can skip the `git submodule` steps by using the `--recurse-submodules` flag while cloning:
-# $ git clone --recurse-submodules git@github.com:anulman/mmd-js.git
-
-# install `packages/MultiMarkdown-7`
-git submodule init
-git submodule update
+# clone the repo; CMake fetches the pinned MMD7 source during native/WASM builds
+# $ git clone git@github.com:anulman/mmd-js.git
 
 # install emscripten, for wasm builds
 brew install emscripten
@@ -105,7 +101,7 @@ pnpm run wasm:configure
 
 ### Validation
 
-The characterization tests use `packages/MultiMarkdown-7/tests/MMD7Tests/Integrated.text` from the submodule and compare parser output against the MMD7 integrated fixture expectations.
+The characterization tests use the pinned MMD7 fixture under `tests/fixtures/mmd7/` and compare parser output against the MMD7 integrated fixture expectations. The MMD7 source itself is fetched by CMake at the pinned commit during native/WASM builds.
 
 Recommended validation commands:
 
