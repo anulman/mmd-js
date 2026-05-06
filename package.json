@@ -22,7 +22,10 @@
     "napi:compile": "cmake-js compile -O build/napi",
     "wasm:configure": "emcmake cmake -B build/wasm",
     "wasm:build": "emmake make -C build/wasm",
-    "prepublish": "npm run build && cp -f build/wasm/packages/wasm/mmd.wasm mmd.wasm && cp -f build/wasm/packages/wasm/mmd.js mmd.wasm.js"
+    "prepare:package": "npm run build:js && npm run wasm:configure && npm run build:wasm && cp -f build/wasm/packages/wasm/mmd.wasm mmd.wasm && cp -f build/wasm/packages/wasm/mmd.js mmd.wasm.js",
+    "prepack": "npm run prepare:package",
+    "prepublishOnly": "npm run prepare:package && npm run package:smoke",
+    "package:smoke": "node tests/package-smoke.mjs"
   },
   "keywords": [],
   "author": "",
@@ -45,5 +48,22 @@
     "trim-buffer": "^5.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
-  }
+  },
+  "types": "index.d.ts",
+  "files": [
+    "LICENSE.md",
+    "README.md",
+    "CMakeLists.txt",
+    "index.js",
+    "index.d.ts",
+    "types.js",
+    "types.d.ts",
+    "wasm.js",
+    "wasm.d.ts",
+    "mmd.wasm",
+    "mmd.wasm.js",
+    "mmd.wasm.d.ts",
+    "packages/napi/**",
+    "packages/MultiMarkdown-7/**"
+  ]
 }
