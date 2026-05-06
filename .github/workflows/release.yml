@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: "Run publish in dry-run mode"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  npm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Enable Corepack pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.15.9 --activate
+
+      - name: Set up Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: latest
+          actions-cache-folder: emsdk-cache
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build and test package artifact
+        env:
+          CHROMIUM_BIN: /usr/bin/google-chrome
+        run: |
+          pnpm run build:js
+          pnpm run build:napi
+          pnpm run wasm:configure
+          pnpm run build:wasm
+          pnpm test
+          pnpm run package:smoke
+
+      - name: Publish package dry run
+        if: github.event_name == 'workflow_dispatch' && inputs.dry-run
+        run: npm publish --dry-run --provenance --access public
+
+      - name: Publish package
+        if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && !inputs.dry-run)
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
