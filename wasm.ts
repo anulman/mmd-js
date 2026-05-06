@@ -22,8 +22,6 @@ export const load = async (
   locateFile?: string | ((path: string) => string)
 ) => {
   if (_wasm) {
-    console.warn("wasm already loaded; returning cached instance");
-
     return _wasm;
   }
 
