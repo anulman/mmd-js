@@ -1,7 +1,10 @@
 # mmd-js [![npm version](https://badge.fury.io/js/mmd-js.svg)](https://badge.fury.io/js/mmd-js)
 
-This project is a lightweight wrapper around `multimarkdown-6`'s C library.
-Node.js scripts use it to parse Multimarkdown documents and walk their ASTs.
+`mmd-js` is a lightweight wrapper around the MultiMarkdown C library. As of the `0.4.x` line, it uses the MultiMarkdown 7 engine and exposes the MMD7 AST structure to JavaScript.
+
+> **Breaking change:** `0.4.x` is not AST-compatible with `0.3.x` and earlier. Consumers that inspect node `type` values, tree shape, byte offsets, or fixture snapshots should treat the `0.4.x` upgrade as a breaking migration to the MMD7 engine and AST.
+
+`mmd-js` is intentionally a parser/AST library, not a complete renderer. It gives Node.js and browser code access to MultiMarkdown parse trees, source spans, and small traversal/read helpers. HTML rendering, rich editor adapters, and semantic previews should live in separate packages or application layers built on top of this AST.
 
 ## Demo / Context
 
@@ -17,7 +20,7 @@ npm install mmd-js
 
 ## Usage
 
-`mmd-js` currently exposes a very small interface:
+`mmd-js` currently exposes a small parser interface:
 
 ```ts
 import * as mmd from "mmd-js";
@@ -86,7 +89,7 @@ Tested with `pnpm`, but `npm` should work fine.
 # you can skip the `git submodule` steps by using the `--recurse-submodules` flag while cloning:
 # $ git clone --recurse-submodules git@github.com:anulman/mmd-js.git
 
-# install `packages/MultiMarkdown-6`
+# install `packages/MultiMarkdown-7`
 git submodule init
 git submodule update
 
@@ -102,7 +105,7 @@ pnpm run wasm:configure
 
 ### Validation
 
-The characterization tests use `packages/MultiMarkdown-6/tests/MMD6Tests/Integrated.text` from the submodule and compare the normalized token graph against `tests/fixtures/mmd6-integrated.snapshot.json`.
+The characterization tests use `packages/MultiMarkdown-7/tests/MMD7Tests/Integrated.text` from the submodule and compare parser output against the MMD7 integrated fixture expectations.
 
 Recommended validation commands:
 
