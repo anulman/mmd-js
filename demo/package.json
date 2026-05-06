@@ -7,12 +7,12 @@
   },
   "scripts": {
     "dev": "next dev",
-    "prebuild": "pnpm run verify:local-mmd && test -f public/mmd.wasm",
-    "build": "next build",
+    "build": "pnpm run prepare:local-mmd && next build",
     "start": "next start",
     "lint": "next lint",
     "verify:local-mmd": "node scripts/verify-local-mmd.mjs",
-    "smoke": "node scripts/smoke-demo.mjs"
+    "smoke": "node scripts/smoke-demo.mjs",
+    "prepare:local-mmd": "node scripts/prepare-local-mmd.mjs"
   },
   "dependencies": {
     "@types/node": "20.2.1",
