@@ -3,10 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../MultiMarkdown-7/src/libMultiMarkdown7.h"
-#include "../MultiMarkdown-7/src/mmd_node_pool.h"
-#include "../MultiMarkdown-7/src/vector_line_node.h"
-#include "../MultiMarkdown-7/src/mmd_parser_hand_2.h"
+#include <libMultiMarkdown7.h>
+#include <mmd_node_pool.h>
+#include <vector_line_node.h>
+#include <mmd_parser_hand_2.h>
 
 EM_JS(void*, create_js_object, (mmd_node* obj), {
   if (Module.nodeObjectMap.has(obj)) {

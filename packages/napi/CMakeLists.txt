@@ -21,7 +21,7 @@ execute_process(COMMAND node -p "require('node-addon-api').include"
 string(REGEX REPLACE "[\r\n\"]" "" NODE_ADDON_API_DIR ${NODE_ADDON_API_DIR})
 
 add_library(mmd_objs OBJECT ${SOURCE_FILES} ${CMAKE_JS_SRC})
-target_include_directories(mmd_objs PRIVATE ${CMAKE_JS_INC} ${NODE_ADDON_API_DIR} ../MultiMarkdown-7/src)
+target_include_directories(mmd_objs PRIVATE ${CMAKE_JS_INC} ${NODE_ADDON_API_DIR} ${MMD7_SOURCE_DIR}/src)
 
 add_library(${PROJECT_NAME} SHARED $<TARGET_OBJECTS:mmd_objs>)
 set_target_properties(${PROJECT_NAME}

@@ -63,12 +63,7 @@
     "mmd.wasm",
     "mmd.wasm.js",
     "mmd.wasm.d.ts",
-    "packages/napi/**",
-    "packages/MultiMarkdown-7/CMakeLists.txt",
-    "packages/MultiMarkdown-7/LICENSE",
-    "packages/MultiMarkdown-7/README.md",
-    "packages/MultiMarkdown-7/.mmd-js-source-revision",
-    "packages/MultiMarkdown-7/src/**",
-    "packages/MultiMarkdown-7/templates/**"
+    "cmake/**",
+    "packages/napi/**"
   ]
 }

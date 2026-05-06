@@ -23,7 +23,7 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} \
 ")
 
 # Include MultiMarkdown headers
-include_directories(packages/MultiMarkdown-7/src)
+include_directories(${MMD7_SOURCE_DIR}/src)
 
 # Define the source files
 set(SOURCE_FILES mmd.c)

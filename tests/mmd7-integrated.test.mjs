@@ -7,8 +7,8 @@ import * as wasm from "../wasm.js";
 import { normalizeNode } from "./helpers/normalize-node.mjs";
 import { parseMmd7Ast } from "./helpers/parse-mmd7-ast.mjs";
 
-const fixturePath = "packages/MultiMarkdown-7/tests/MMD7Tests/Integrated.text";
-const astPath = "packages/MultiMarkdown-7/tests/MMD7Tests/Integrated.ast";
+const fixturePath = "tests/fixtures/mmd7/Integrated.text";
+const astPath = "tests/fixtures/mmd7/Integrated.ast";
 
 async function readFixture() {
   return readFile(fixturePath);
