@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { spawn } from "node:child_process";
 import { chromium } from "playwright-core";
 
@@ -13,6 +13,8 @@ const chromiumExecutable = process.env.CHROMIUM_BIN ?? [
 if (!chromiumExecutable) {
   throw new Error("Set CHROMIUM_BIN to a Chromium/Chrome executable");
 }
+
+const integratedFixture = readFileSync(new URL("../../packages/MultiMarkdown-7/tests/MMD7Tests/Integrated.text", import.meta.url), "utf8");
 
 const port = Number(process.env.PORT ?? 3123);
 const child = spawn("corepack", ["pnpm@8.15.9", "start", "--", "-p", String(port)], {
@@ -78,6 +80,15 @@ try {
   await assertVisibleText(page, "This section was parsed by the MMD7 WASM AST.");
   await assertVisibleText(page, "Second Section");
   await assertVisibleText(page, "The browser demo is using the local mmd-js package.");
+
+  await page.getByLabel("MultiMarkdown input").fill(integratedFixture);
+  await page.getByRole("button", { name: "Parse sample" }).click();
+  await assertVisibleText(page, "MultiMarkdown test suite");
+  await assertVisibleText(page, "Core Markdown Features");
+  await assertVisibleText(page, "Basic Block Level Elements");
+  await assertVisibleText(page, "Paragraphs");
+  await assertVisibleText(page, "Headers");
+  await assertVisibleText(page, "MultiMarkdown Features");
 
   assert.deepEqual(pageErrors, [], "browser page errors");
   assert.deepEqual(badResponses, [], "browser HTTP errors");

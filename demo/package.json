@@ -6,12 +6,11 @@
     "node": "24.x"
   },
   "scripts": {
-    "dev": "pnpm run copy:mmd-wasm && next dev",
-    "prebuild": "pnpm run verify:local-mmd && pnpm run copy:mmd-wasm",
+    "dev": "next dev",
+    "prebuild": "pnpm run verify:local-mmd && test -f public/mmd.wasm",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "copy:mmd-wasm": "mkdir -p public && cp ../mmd.wasm public/mmd.wasm",
     "verify:local-mmd": "node scripts/verify-local-mmd.mjs",
     "smoke": "node scripts/smoke-demo.mjs"
   },

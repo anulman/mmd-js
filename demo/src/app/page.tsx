@@ -23,11 +23,13 @@ export default function Home() {
   const [data, setParsed] = React.useState<Data | null>(null);
   const [input, setInput] = React.useState(sampleDocument);
   const [error, setError] = React.useState<string | null>(null);
+  const wasmLoadPromise = React.useRef<Promise<unknown> | null>(null);
 
   const parseBuffer = React.useCallback(async (buf: ArrayBuffer) => {
     setError(null);
     try {
-      await mmd.load("/mmd.wasm");
+      wasmLoadPromise.current ??= mmd.load("/mmd.wasm");
+      await wasmLoadPromise.current;
       setParsed(collateSections(buf, mmd.parse(buf)));
     } catch (error) {
       setError(error instanceof Error ? error.message : String(error));
@@ -120,7 +122,14 @@ const collateSections = (buf: ArrayBuffer, root: mmd.Node): Data => {
         }
         break;
       }
-      case mmd.Type.BLOCK_H1: {
+      case mmd.Type.BLOCK_H1:
+      case mmd.Type.BLOCK_H2:
+      case mmd.Type.BLOCK_H3:
+      case mmd.Type.BLOCK_H4:
+      case mmd.Type.BLOCK_H5:
+      case mmd.Type.BLOCK_H6:
+      case mmd.Type.BLOCK_SETEXT_1:
+      case mmd.Type.BLOCK_SETEXT_2: {
         const lastSection = sections.at(-1);
 
         if (lastSection) {
@@ -128,8 +137,8 @@ const collateSections = (buf: ArrayBuffer, root: mmd.Node): Data => {
         }
 
         sections.push({
-          title: mmd.readTitle(buf, node),
-          startIndex: node.next?.start ?? node.start + node.len,
+          title: readHeadingTitle(buf, node),
+          startIndex: node.start + node.len,
           endIndex: -1,
         });
         break;
@@ -155,6 +164,17 @@ const collateSections = (buf: ArrayBuffer, root: mmd.Node): Data => {
 };
 
 const decoder = new TextDecoder();
+
+const readHeadingTitle = (buf: ArrayBuffer, node: mmd.Node) => {
+  const heading = mmd.readTitle(buf, node).trim();
+
+  if (node.type === mmd.Type.BLOCK_SETEXT_1 || node.type === mmd.Type.BLOCK_SETEXT_2) {
+    return heading.split(/\r?\n/)[0]?.trim() || "Untitled section";
+  }
+
+  return heading || "Untitled section";
+};
+
 const readSection = (buf: ArrayBuffer, section: Section) =>
   decoder.decode(buf.slice(section.startIndex, section.endIndex)).trim();
 
