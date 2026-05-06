@@ -34,14 +34,28 @@ try {
     "mmd.wasm.js",
     "mmd.wasm",
     "mmd.wasm.d.ts",
-    "packages/napi/mmd.cpp",
+    "prebuilds/linux-x64/node.napi.node",
   ]) {
     assert.ok(packedFiles.has(required), `npm package is missing ${required}`);
   }
 
+  for (const omittedSourcePrefix of [
+    "packages/",
+    "cmake/",
+  ]) {
+    assert.ok(
+      !files.some((file) => file.path.startsWith(omittedSourcePrefix)),
+      `npm package should not include source/build inputs under ${omittedSourcePrefix}`
+    );
+  }
+
   assert.ok(
-    !files.some((file) => file.path.startsWith("packages/MultiMarkdown-7/")),
-    "npm package should not include vendored MultiMarkdown-7 sources"
+    !packedFiles.has("CMakeLists.txt"),
+    "npm package should not include CMakeLists.txt"
+  );
+  assert.ok(
+    !packedFiles.has("scripts/copy-napi-prebuild.mjs"),
+    "npm package should not include maintainer-only prebuild copy script"
   );
 
   run("npm", ["init", "-y"], work);

@@ -10,8 +10,8 @@
     "node": "24.x"
   },
   "scripts": {
-    "install": "npm run napi:compile || exit 0",
-    "build:napi": "npm run napi:compile",
+    "install": "node scripts/check-napi-prebuild.mjs || exit 0",
+    "build:napi": "npm run prebuild:napi",
     "build:wasm": "npm run wasm:build",
     "build:js": "tsc -p . --noEmit false",
     "build": "concurrently --kill-others-on-fail -s all \"npm:build:napi\" \"npm:build:wasm\" \"npm:build:js\"",
@@ -22,17 +22,20 @@
     "napi:compile": "cmake-js compile -O build/napi",
     "wasm:configure": "emcmake cmake -B build/wasm",
     "wasm:build": "emmake make -C build/wasm",
-    "prepare:package": "npm run build:js && npm run wasm:configure && npm run build:wasm && cp -f build/wasm/packages/wasm/mmd.wasm mmd.wasm && cp -f build/wasm/packages/wasm/mmd.js mmd.wasm.js",
+    "prepare:package": "npm run build:js && npm run prebuild:napi && npm run wasm:configure && npm run build:wasm && cp -f build/wasm/packages/wasm/mmd.wasm mmd.wasm && cp -f build/wasm/packages/wasm/mmd.js mmd.wasm.js",
     "prepack": "npm run prepare:package",
     "prepublishOnly": "npm run prepare:package && npm run package:smoke",
-    "package:smoke": "node tests/package-smoke.mjs"
+    "package:smoke": "node tests/package-smoke.mjs",
+    "prebuild:napi": "npm run napi:compile && node scripts/copy-napi-prebuild.mjs",
+    "prebuild": "npm run prepare:package"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "cmake-js": "^7.2.1",
-    "node-addon-api": "^6.1.0"
+    "node-addon-api": "^6.1.0",
+    "node-gyp-build": "^4.8.4"
   },
   "devDependencies": {
     "@swc/core": "^1.3.56",
@@ -53,7 +56,6 @@
   "files": [
     "LICENSE.md",
     "README.md",
-    "CMakeLists.txt",
     "index.js",
     "index.d.ts",
     "types.js",
@@ -63,7 +65,7 @@
     "mmd.wasm",
     "mmd.wasm.js",
     "mmd.wasm.d.ts",
-    "cmake/**",
-    "packages/napi/**"
+    "scripts/check-napi-prebuild.mjs",
+    "prebuilds/**"
   ]
 }
