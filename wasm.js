@@ -6,7 +6,6 @@ let _wasm;
 let _wasmPromise;
 export const load = async (locateFile) => {
     if (_wasm) {
-        console.warn("wasm already loaded; returning cached instance");
         return _wasm;
     }
     if (_wasmPromise) {
