@@ -73,12 +73,22 @@ jobs:
             npm_tag="${prerelease_part%%.*}"
           fi
 
-          if [[ -n "${{ inputs.npm-tag || '' }}" ]]; then
-            npm_tag="${{ inputs.npm-tag }}"
+          npm_tag_input="${{ inputs.npm-tag || '' }}"
+          if [[ -n "$npm_tag_input" ]]; then
+            npm_tag="$npm_tag_input"
+            if [[ "$npm_tag_input" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+-([A-Za-z0-9][A-Za-z0-9_-]*)(\.[0-9A-Za-z._-]+)?$ ]]; then
+              npm_tag="${BASH_REMATCH[1]}"
+              echo "Normalized version-like npm tag input '$npm_tag_input' to dist-tag '$npm_tag'"
+            fi
           fi
 
           if ! [[ "$npm_tag" =~ ^[A-Za-z0-9._-]+$ ]]; then
             echo "Invalid npm tag: $npm_tag" >&2
+            exit 1
+          fi
+
+          if [[ "$npm_tag" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+($|-.*) ]]; then
+            echo "Invalid npm dist-tag: $npm_tag. Use a channel tag such as latest, alpha, beta, rc, or next; not a version." >&2
             exit 1
           fi
 
