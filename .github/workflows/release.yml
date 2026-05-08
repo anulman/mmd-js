@@ -7,6 +7,10 @@ on:
       - "v[0-9]+.[0-9]+.[0-9]+-*"
   workflow_dispatch:
     inputs:
+      version:
+        description: "Version to publish, e.g. 0.4.0-rc.0; defaults to package.json, or a version-like npm-tag for backward compatibility"
+        type: string
+        required: false
       dry-run:
         description: "Run publish in dry-run mode"
         type: boolean
@@ -51,18 +55,28 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          package_version=$(node -p "require('./package.json').version")
+          package_json_version=$(node -p "require('./package.json').version")
+          version_input="${{ inputs.version || '' }}"
+          npm_tag_input="${{ inputs.npm-tag || '' }}"
 
           if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
             tag="${GITHUB_REF_NAME}"
             tag_version="${tag#v}"
-            if [[ "$tag_version" != "$package_version" ]]; then
-              echo "Tag version ($tag_version) must match package.json version ($package_version)" >&2
+            if [[ "$tag_version" != "$package_json_version" ]]; then
+              echo "Tag version ($tag_version) must match package.json version ($package_json_version)" >&2
               exit 1
             fi
+          elif [[ -n "$version_input" ]]; then
+            tag_version="$version_input"
+            tag="v${tag_version}"
+          elif [[ -n "$npm_tag_input" && "$npm_tag_input" =~ ^v?([0-9]+\.[0-9]+\.[0-9]+-[A-Za-z0-9][0-9A-Za-z._-]*)$ ]]; then
+            # Backward-compatible convenience: if a manual run put the intended
+            # package version in npm-tag, use it as the release version too.
+            tag_version="${BASH_REMATCH[1]}"
+            tag="v${tag_version}"
           else
-            tag="v${package_version}"
-            tag_version="$package_version"
+            tag_version="$package_json_version"
+            tag="v${tag_version}"
           fi
 
           prerelease="false"
@@ -73,7 +87,6 @@ jobs:
             npm_tag="${prerelease_part%%.*}"
           fi
 
-          npm_tag_input="${{ inputs.npm-tag || '' }}"
           if [[ -n "$npm_tag_input" ]]; then
             npm_tag="$npm_tag_input"
             if [[ "$npm_tag_input" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+-([A-Za-z0-9][A-Za-z0-9_-]*)(\.[0-9A-Za-z._-]+)?$ ]]; then
@@ -93,15 +106,31 @@ jobs:
           fi
 
           {
-            echo "package-version=$package_version"
+            echo "package-version=$tag_version"
             echo "tag=$tag"
             echo "prerelease=$prerelease"
             echo "npm-tag=$npm_tag"
           } >> "$GITHUB_OUTPUT"
 
           echo "Release tag: $tag"
+          echo "Package version: $tag_version"
           echo "GitHub prerelease: $prerelease"
           echo "npm dist-tag: $npm_tag"
+
+      - name: Apply workflow package version
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          RELEASE_VERSION: ${{ steps.meta.outputs.package-version }}
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const version = process.env.RELEASE_VERSION;
+          const path = 'package.json';
+          const json = JSON.parse(fs.readFileSync(path, 'utf8'));
+          json.version = version;
+          fs.writeFileSync(path, JSON.stringify(json, null, 2) + '\n');
+          console.log(`package.json version set to ${version}`);
+          NODE
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
