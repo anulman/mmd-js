@@ -6,3 +6,5 @@ node_modules/
 *.d.ts
 !mmd.wasm.d.ts
 *.wasm
+!demo/public/mmd.wasm
+!demo/public/mmd.wasm.js

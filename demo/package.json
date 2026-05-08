@@ -9,7 +9,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "verify:local-mmd": "node scripts/verify-local-mmd.mjs",
+    "smoke": "node scripts/smoke-demo.mjs"
   },
   "dependencies": {
     "@types/node": "20.2.1",
@@ -17,7 +19,7 @@
     "@types/react-dom": "18.2.4",
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.3",
-    "mmd-js": "^0.2.4",
+    "mmd-js": "file:..",
     "next": "13.4.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -25,6 +27,7 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
-    "copy-webpack-plugin": "^11.0.0"
+    "copy-webpack-plugin": "^11.0.0",
+    "playwright-core": "^1.44.0"
   }
 }
